@@ -11,12 +11,11 @@ const Header = () => {
     <header className='sticky top-0 z-50 pt-2 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b'>
       <div className='container mx-auto flex justify-between items-center px-4 h-16'>
         <Link to='/'>
-          <img src={isDark ? 'vite.svg' : '/logo-light.svg'} alt='Timeswap Logo' className='h-14' />
+          <img src='logo-1.png' alt='Timeswap Logo' className='h-14' />
         </Link>
 
         <div>
           {/* Search */}
-          {/* Theme toggle */}
           <div
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
             className={`flex items-center transition-transform duration-500 cursor-pointer

@@ -1,21 +1,19 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Layout from './components/layout'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from './context/theme-provider'
-import Dashboard from './pages/dashboard'
-import User from './pages/user'
+import AppRoutes from './routes'
+
+const queryClient = new QueryClient()
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <ThemeProvider defaultTheme='dark'>
-        <Layout>
-          <Routes>
-            <Route path='/' element={<Dashboard />} />
-            <Route path='/users' element={<User />} />
-          </Routes>
-        </Layout>
-      </ThemeProvider>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <ThemeProvider defaultTheme='dark'>
+          <AppRoutes />
+        </ThemeProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   )
 }
 
