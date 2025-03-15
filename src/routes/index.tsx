@@ -1,5 +1,5 @@
 import Layout from '@/components/layout/layout'
-import Login from '@/pages/auth/login'
+import LoginPage from '@/pages/auth/login'
 import Dashboard from '@/pages/dashboard'
 import ErrorPage from '@/pages/error/error-page'
 import JobPost from '@/pages/jobpost/jobpost'
@@ -31,7 +31,7 @@ import { createBrowserRouter } from 'react-router-dom'
 export const router = createBrowserRouter([
   {
     path: '/login',
-    element: <Login />
+    element: <LoginPage />
   },
   {
     element: <ProtectedRoute />,

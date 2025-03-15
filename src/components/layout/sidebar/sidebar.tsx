@@ -24,14 +24,9 @@ import {
   SidebarRail
 } from '@/components/ui/sidebar'
 import { NavMain, NavOthers, NavUser } from './nav'
+import { useAuthStore } from '@/store/auth-store'
 
-// This is sample data.
 const data = {
-  user: {
-    name: 'HuyTD',
-    email: 'huytde.dev@gmail.com',
-    avatar: '/gentleman.png'
-  },
   navMain: [
     {
       title: 'Users',
@@ -117,6 +112,8 @@ const data = {
 }
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
+  const { user, clearToken } = useAuthStore()
+
   return (
     <Sidebar collapsible='icon' {...props}>
       <SidebarHeader>
@@ -141,7 +138,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
         <NavOthers others={data.others} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} clearToken={clearToken} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

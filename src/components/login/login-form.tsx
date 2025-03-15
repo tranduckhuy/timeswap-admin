@@ -4,14 +4,46 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '@/store/auth-store'
+import { useMutation } from '@tanstack/react-query'
+import { login } from '@/services/api/auth-service'
+import { z } from 'zod'
+import { toast } from 'sonner'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { AxiosError } from 'axios'
+
+const loginSchema = z.object({
+  email: z.string().email({ message: 'Email is invalid' }),
+  password: z.string().min(6, { message: 'Password must be at least 8 characters' })
+})
 
 const LoginForm = ({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) => {
+  const setToken = useAuthStore((state) => state.setToken)
   const navigate = useNavigate()
 
-  // fake login
-  const handleFakeLogin = () => {
-    localStorage.setItem('authToken', 'fake-token')
-    navigate('/')
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
+    resolver: zodResolver(loginSchema)
+  })
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (data: { email: string; password: string }) => login(data.email, data.password),
+    onSuccess: (data) => {
+      setToken(data.accessToken)
+      toast.success('Login successfully')
+      navigate('/')
+    },
+    onError: (error: AxiosError) => {
+      toast.error(error.message)
+    }
+  })
+
+  const onSubmit = (data: { email: string; password: string }) => {
+    mutate(data)
   }
 
   return (
@@ -22,7 +54,7 @@ const LoginForm = ({ className, ...props }: React.ComponentPropsWithoutRef<'div'
           <CardDescription>Login with your Apple or Google account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className='grid gap-6'>
               <div className='flex flex-col gap-4'>
                 <Button variant='outline' className='w-full'>
@@ -50,7 +82,8 @@ const LoginForm = ({ className, ...props }: React.ComponentPropsWithoutRef<'div'
               <div className='grid gap-6'>
                 <div className='grid gap-2'>
                   <Label htmlFor='email'>Email</Label>
-                  <Input id='email' type='email' placeholder='m@example.com' required />
+                  <Input {...register('email')} id='email' type='email' placeholder='m@example.com' />
+                  {errors.email && <p className='text-red-500 text-sm'>{errors.email.message}</p>}
                 </div>
                 <div className='grid gap-2'>
                   <div className='flex items-center'>
@@ -59,10 +92,11 @@ const LoginForm = ({ className, ...props }: React.ComponentPropsWithoutRef<'div'
                       Forgot your password?
                     </a>
                   </div>
-                  <Input id='password' type='password' required />
+                  <Input {...register('password')} id='password' type='password' />
+                  {errors.password && <p className='text-red-500 text-sm'>{errors.password.message}</p>}
                 </div>
-                <Button type='submit' className='w-full' onClick={handleFakeLogin}>
-                  Login
+                <Button type='submit' className='w-full' disabled={isPending}>
+                  {isPending ? 'Logging in...' : 'Login'}
                 </Button>
               </div>
             </div>
