@@ -1,5 +1,4 @@
 import LoginForm from '@/components/login/login-form'
-import { Toaster } from 'sonner'
 
 const LoginPage = () => {
   return (
@@ -10,7 +9,6 @@ const LoginPage = () => {
         </div>
         <LoginForm />
       </div>
-      <Toaster />
     </div>
   )
 }

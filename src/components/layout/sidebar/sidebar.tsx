@@ -23,8 +23,9 @@ import {
   SidebarMenuItem,
   SidebarRail
 } from '@/components/ui/sidebar'
-import { NavMain, NavOthers, NavUser } from './nav'
 import { useAuthStore } from '@/store/auth-store'
+import { Link } from 'react-router-dom'
+import { NavMain, NavOthers, NavUser } from './nav'
 
 const data = {
   navMain: [
@@ -112,7 +113,13 @@ const data = {
 }
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
-  const { user, clearToken } = useAuthStore()
+  const { user, fetchUserProfile, clearToken } = useAuthStore()
+
+  React.useEffect(() => {
+    if (!user) {
+      fetchUserProfile()
+    }
+  }, [user, fetchUserProfile])
 
   return (
     <Sidebar collapsible='icon' {...props}>
@@ -120,7 +127,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild>
-              <a href='/'>
+              <Link to={'/'}>
                 <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'>
                   <LucideLayoutDashboard className='size-4' />
                 </div>
@@ -128,7 +135,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                   <span className='font-semibold'>Timeswap</span>
                   <span>Dashboard</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

@@ -10,15 +10,15 @@ interface LoginResponse {
   expiresIn: number
 }
 
-export const login = async (email: string, password: string): Promise<LoginResponse> => {
+export const login = async (email: string, password: string): Promise<IRequestResponse<LoginResponse>> => {
   try {
-    const response = await axios.post<IRequestResponse<LoginResponse>>(`${API_CONFIG.API_AUTH_URL}/login`, {
+    const response = await axios.post<IRequestResponse<LoginResponse>>(`${API_CONFIG.API_AUTH_URL}/auth/login`, {
       email,
       password
     })
 
     if (response.data.statusCode === 1000 && response.data.data) {
-      return response.data.data
+      return response.data
     }
     throw new Error(response.data.message || 'Login failed')
   } catch (error) {
@@ -27,7 +27,12 @@ export const login = async (email: string, password: string): Promise<LoginRespo
   }
 }
 
-export async function getProfile(): Promise<IRequestResponse<IUserProfile>> {
+export const getProfile = async (): Promise<IRequestResponse<IUserProfile>> => {
   const { data } = await axiosInstance.get<IRequestResponse<IUserProfile>>('/users/profile')
+  return data
+}
+
+export const logout = async (): Promise<IRequestResponse> => {
+  const { data } = await axiosInstance.delete<IRequestResponse>('/auth/logout')
   return data
 }

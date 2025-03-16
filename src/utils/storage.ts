@@ -1,7 +1,7 @@
-const TOKEN_KEY = 'authToken'
+const TOKEN_KEY = 'access_token'
 
 export const storage = {
-  getToken: () => localStorage.getItem(TOKEN_KEY),
+  getToken: () => (typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null),
   setToken: (token: string) => localStorage.setItem(TOKEN_KEY, token),
   removeToken: () => localStorage.removeItem(TOKEN_KEY)
 }

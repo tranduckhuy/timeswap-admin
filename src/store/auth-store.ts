@@ -25,7 +25,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   fetchUserProfile: async () => {
     try {
       const response = await getProfile()
-      if (response.statusCode === 0 && response.data) {
+      if (response.data) {
         set({ user: response.data })
       } else {
         console.error('Failed to fetch user profile:', response.message)

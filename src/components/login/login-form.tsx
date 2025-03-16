@@ -15,7 +15,7 @@ import { AxiosError } from 'axios'
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Email is invalid' }),
-  password: z.string().min(6, { message: 'Password must be at least 8 characters' })
+  password: z.string().min(8, { message: 'Password must be at least 8 characters' })
 })
 
 const LoginForm = ({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) => {
@@ -32,13 +32,23 @@ const LoginForm = ({ className, ...props }: React.ComponentPropsWithoutRef<'div'
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: { email: string; password: string }) => login(data.email, data.password),
-    onSuccess: (data) => {
-      setToken(data.accessToken)
-      toast.success('Login successfully')
+    onSuccess: (response) => {
+      setToken(response.data!.accessToken)
+      toast.success(response.message, {
+        style: {
+          backgroundColor: '#4CAF50',
+          color: '#FFFFFF'
+        }
+      })
       navigate('/')
     },
     onError: (error: AxiosError) => {
-      toast.error(error.message)
+      toast.error(error.message, {
+        style: {
+          backgroundColor: '#F44336',
+          color: '#FFFFFF'
+        }
+      })
     }
   })
 
