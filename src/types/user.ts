@@ -10,7 +10,7 @@ export interface IUserProfile {
   avatarUrl: string
   description: string
   balance: number
-  subscriptionPlan: string
+  subscriptionPlan: number
   subscriptionExpiryDate: string
   educationHistory: string[]
   majorCategory: string

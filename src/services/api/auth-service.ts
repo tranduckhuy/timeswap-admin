@@ -17,7 +17,7 @@ export const login = async (email: string, password: string): Promise<IRequestRe
       password
     })
 
-    if (response.data.statusCode === 1000 && response.data.data) {
+    if (response.data.data) {
       return response.data
     }
     throw new Error(response.data.message || 'Login failed')
