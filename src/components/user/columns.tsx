@@ -1,5 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { ArrowUpDown, Copy, CreditCardIcon, Lock, MoreHorizontal, User2Icon } from 'lucide-react'
+import { ArrowUpDown, Copy, CreditCardIcon, Lock, MoreHorizontal, Unlock, User2Icon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -14,8 +14,11 @@ import {
 import { IUserProfile } from '@/types/user'
 import { format } from 'date-fns'
 import { vi } from 'date-fns/locale'
+import { Ward } from '@/types/ward'
+import { toast } from 'sonner'
+import { lockUserAccount, unlockUserAccount } from '@/services/api/user-service'
 
-const subscriptionPlanLabels = ['Free', 'Basic', 'Premium']
+const subscriptionPlanLabels = ['Basic', 'Standard', 'Premium']
 
 export const columns: ColumnDef<IUserProfile>[] = [
   {
@@ -55,9 +58,9 @@ export const columns: ColumnDef<IUserProfile>[] = [
     cell: ({ row }) => <div className='capitalize'>{row.getValue('fullName')}</div>
   },
   {
-    accessorKey: 'fullLocation',
+    accessorKey: 'ward',
     header: 'Full location',
-    cell: ({ row }) => <div className='capitalize'>{row.getValue('fullLocation') || 'N/A'}</div>
+    cell: ({ row }) => <div className='capitalize'>{row.getValue<Ward>('ward')?.fullLocation || 'N/A'}</div>
   },
   {
     accessorKey: 'educationHistory',
@@ -68,10 +71,10 @@ export const columns: ColumnDef<IUserProfile>[] = [
     }
   },
   {
-    accessorKey: 'subscriptionPlan',
+    accessorKey: 'currentSubscription',
     header: 'Subscription plan',
     cell: ({ row }) => (
-      <div className='capitalize'>{subscriptionPlanLabels[row.original.subscriptionPlan] || 'N/A'}</div>
+      <div className='capitalize'>{subscriptionPlanLabels[row.original.currentSubscription] || 'N/A'}</div>
     )
   },
   {
@@ -104,6 +107,20 @@ export const columns: ColumnDef<IUserProfile>[] = [
     cell: ({ row }) => {
       const user = row.original
 
+      const handleLockUnlock = async () => {
+        try {
+          if (user.isLocked) {
+            await unlockUserAccount({ userId: user.id })
+            toast.success('Account unlocked successfully')
+          } else {
+            await lockUserAccount({ userId: user.id })
+            toast.success('Account locked successfully')
+          }
+        } catch (error) {
+          toast.error(error.message)
+        }
+      }
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -124,8 +141,9 @@ export const columns: ColumnDef<IUserProfile>[] = [
             <DropdownMenuItem>
               <CreditCardIcon /> View payment details
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Lock /> Lock Account
+            <DropdownMenuItem onClick={handleLockUnlock}>
+              {user.isLocked ? <Unlock /> : <Lock />}
+              {user.isLocked ? 'Unlock Account' : 'Lock Account'}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

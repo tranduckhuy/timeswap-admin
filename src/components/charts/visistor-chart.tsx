@@ -1,25 +1,20 @@
-import * as React from 'react'
-import { Label, Pie, PieChart, Sector } from 'recharts'
-import { PieSectorDataItem } from 'recharts/types/polar/Pie'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartConfig, ChartContainer, ChartStyle, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-const desktopData = [
-  { month: 'january', desktop: 186, fill: 'var(--color-january)' },
-  { month: 'february', desktop: 305, fill: 'var(--color-february)' },
-  { month: 'march', desktop: 237, fill: 'var(--color-march)' },
-  { month: 'april', desktop: 173, fill: 'var(--color-april)' },
-  { month: 'may', desktop: 209, fill: 'var(--color-may)' }
-]
-const chartConfig = {
+import { getMonthlyVisitors } from '@/services/api/dashboard-service'
+import * as React from 'react'
+import { Label, Pie, PieChart, Sector } from 'recharts'
+import { PieSectorDataItem } from 'recharts/types/polar/Pie'
+
+interface VisitorData {
+  month: string
+  visistor: number
+  fill: string
+}
+
+const chartConfig: ChartConfig = {
   visitors: {
     label: 'Visitors'
-  },
-  desktop: {
-    label: 'Desktop'
-  },
-  mobile: {
-    label: 'Mobile'
   },
   january: {
     label: 'January',
@@ -43,19 +38,78 @@ const chartConfig = {
   }
 } satisfies ChartConfig
 
+const monthNames = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+]
+
 const VisitorChart = () => {
   const id = 'pie-interactive'
-  const [activeMonth, setActiveMonth] = React.useState(desktopData[0].month)
-  const activeIndex = React.useMemo(() => desktopData.findIndex((item) => item.month === activeMonth), [activeMonth])
-  const months = React.useMemo(() => desktopData.map((item) => item.month), [])
+  const [visitorData, setVisitorData] = React.useState<VisitorData[]>([])
+  const [loading, setLoading] = React.useState<boolean>(true)
+  const [error, setError] = React.useState<string | null>(null)
+
+  const currentMonth = new Date().toLocaleString('default', { month: 'long' }).toLowerCase()
+  const [activeMonth, setActiveMonth] = React.useState<string>(currentMonth)
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const requestData = {
+          startYear: 2025,
+          startMonth: 1,
+          endYear: 2025,
+          endMonth: 6
+        }
+        const response = await getMonthlyVisitors(requestData)
+        const formattedData: VisitorData[] = response.data!.map((item) => {
+          const monthName = monthNames[item.month - 1] || 'Unknown'
+          const month = monthName.toLowerCase()
+
+          return {
+            month: month,
+            visistor: item.visitCount,
+            fill: `var(--color-${month})`
+          }
+        })
+        setVisitorData(formattedData)
+      } catch (error) {
+        setError(error.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  const activeIndex = React.useMemo(
+    () => visitorData.findIndex((item) => item.month === activeMonth),
+    [visitorData, activeMonth]
+  )
+
+  const months = React.useMemo(() => visitorData.map((item) => item.month), [visitorData])
+
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>Error: {error}</div>
 
   return (
     <Card data-chart={id} className='flex flex-col'>
       <ChartStyle id={id} config={chartConfig} />
       <CardHeader className='flex-row items-start space-y-0 pb-0'>
         <div className='grid gap-1'>
-          <CardTitle>Monthly Visistors </CardTitle>
-          <CardDescription>January - June 2024</CardDescription>
+          <CardTitle>Monthly Visitor </CardTitle>
+          <CardDescription>January - June 2025</CardDescription>
         </div>
         <Select value={activeMonth} onValueChange={setActiveMonth}>
           <SelectTrigger className='ml-auto h-7 w-[130px] rounded-lg pl-2.5' aria-label='Select a value'>
@@ -89,8 +143,8 @@ const VisitorChart = () => {
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Pie
-              data={desktopData}
-              dataKey='desktop'
+              data={visitorData}
+              dataKey='visistor'
               nameKey='month'
               innerRadius={60}
               strokeWidth={5}
@@ -108,7 +162,7 @@ const VisitorChart = () => {
                     return (
                       <text x={viewBox.cx} y={viewBox.cy} textAnchor='middle' dominantBaseline='middle'>
                         <tspan x={viewBox.cx} y={viewBox.cy} className='fill-foreground text-3xl font-bold'>
-                          {desktopData[activeIndex].desktop.toLocaleString()}
+                          {visitorData[activeIndex].visistor.toLocaleString()}
                         </tspan>
                         <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className='fill-muted-foreground'>
                           Visitors

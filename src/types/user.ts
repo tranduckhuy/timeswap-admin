@@ -1,3 +1,7 @@
+import { Category } from './category'
+import { Industry } from './industry'
+import { Ward } from './ward'
+
 export interface IUserProfile {
   id: string
   email: string
@@ -6,13 +10,19 @@ export interface IUserProfile {
   lastName: string
   phoneNumber: string
   role: string[]
-  fullLocation: string
+  ward: Ward
   avatarUrl: string
   description: string
   balance: number
-  subscriptionPlan: number
+  currentSubscription: number
   subscriptionExpiryDate: string
   educationHistory: string[]
-  majorCategory: string
-  majorIndustry: string
+  majorCategory: Category
+  majorIndustry: Industry
+  isLocked: boolean
+}
+
+export interface ILockUnlockUserAccountRequest {
+  userId: string
+  reason?: string
 }
