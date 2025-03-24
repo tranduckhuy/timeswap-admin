@@ -33,7 +33,7 @@ const LoginForm = ({ className, ...props }: React.ComponentPropsWithoutRef<'div'
   const { mutate, isPending } = useMutation({
     mutationFn: (data: { email: string; password: string }) => login(data.email, data.password),
     onSuccess: (response) => {
-      setToken(response.data!.accessToken)
+      setToken(response.data!.accessToken, response.data!.expiresIn)
       toast.success(response.message, {
         style: {
           backgroundColor: '#4CAF50',

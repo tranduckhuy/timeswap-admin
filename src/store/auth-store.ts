@@ -6,28 +6,40 @@ import { toast } from 'sonner'
 
 interface AuthState {
   token: string | null
+  expiresAt: number | null
   user: IUserProfile | null
   isLoading: boolean
-  setToken: (token: string) => void
+  setToken: (token: string, expiresIn: number) => void
   clearToken: () => void
   fetchUserProfile: () => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   token: storage.getToken(),
+  expiresAt: storage.getExpiresAt(),
   user: null,
   isLoading: false,
-  setToken: (token) => {
+  setToken: (token, expiresIn) => {
+    const expiresAt = Date.now() + expiresIn * 1000
     storage.setToken(token)
-    set({ token })
+    storage.setExpiresAt(expiresAt)
+    set({ token, expiresAt })
   },
   clearToken: () => {
     storage.removeToken()
-    set({ token: null, user: null })
+    storage.removeExpiresAt()
+    set({ token: null, user: null, expiresAt: null })
   },
   fetchUserProfile: async () => {
     set({ isLoading: true })
     try {
+      const expiresAt = storage.getExpiresAt()
+      if (expiresAt && Date.now() >= expiresAt) {
+        toast.error('Session expired. Please login again')
+        set({ token: null, user: null, expiresAt: null })
+        return
+      }
+
       const response = await getProfile()
       if (response.data) {
         set({ user: response.data })

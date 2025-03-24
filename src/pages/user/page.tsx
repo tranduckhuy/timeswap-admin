@@ -49,7 +49,7 @@ const UserPage = () => {
   return (
     <div>
       <DataTable
-        columns={columns}
+        columns={columns({ setData })}
         data={data}
         currentPage={currentPage}
         pageSize={pageSize}

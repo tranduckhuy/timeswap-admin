@@ -8,7 +8,7 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '
 const chartData = [
   { month: 'January', users: 12 },
   { month: 'February', users: 24 },
-  { month: 'March', users: 45 },
+  { month: 'March', users: 50 },
   { month: 'April', users: 0 },
   { month: 'May', users: 0 },
   { month: 'June', users: 0 }

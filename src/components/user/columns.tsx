@@ -20,7 +20,11 @@ import { lockUserAccount, unlockUserAccount } from '@/services/api/user-service'
 
 const subscriptionPlanLabels = ['Basic', 'Standard', 'Premium']
 
-export const columns: ColumnDef<IUserProfile>[] = [
+export const columns = ({
+  setData
+}: {
+  setData: React.Dispatch<React.SetStateAction<IUserProfile[]>>
+}): ColumnDef<IUserProfile>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -116,6 +120,8 @@ export const columns: ColumnDef<IUserProfile>[] = [
             await lockUserAccount({ userId: user.id })
             toast.success('Account locked successfully')
           }
+
+          setData((prevData) => prevData.map((u) => (u.id === user.id ? { ...u, isLocked: !u.isLocked } : u)))
         } catch (error) {
           toast.error(error.message)
         }
