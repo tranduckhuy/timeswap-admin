@@ -7,8 +7,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
 const chartData = [
   { month: 'January', users: 12 },
-  { month: 'February', users: 24 },
-  { month: 'March', users: 50 },
+  { month: 'February', users: 28 },
+  { month: 'March', users: 52 },
   { month: 'April', users: 0 },
   { month: 'May', users: 0 },
   { month: 'June', users: 0 }
@@ -61,7 +61,7 @@ const UserGrowthChart = () => {
         <div className='flex w-full items-start gap-2 text-sm'>
           <div className='grid gap-2'>
             <div className='flex items-center gap-2 font-medium leading-none'>
-              Trending up by 87.5% this month <TrendingUp className='h-4 w-4' />
+              Trending up by 85.7% this month <TrendingUp className='h-4 w-4' />
             </div>
             <div className='flex items-center gap-2 leading-none text-muted-foreground'>January - June 2025</div>
           </div>
